@@ -1,0 +1,67 @@
+[
+  {
+    "id": "keras_rule_01",
+    "title": "Keras 3 Multi-Backend Architecture",
+    "content": "Keras 3 allows you to run models on JAX, TensorFlow, and PyTorch seamlessly. To maintain backend agility, never import native framework operations. Always use the unified keras.ops namespace for all mathematical, linear algebra, and neural network activations."
+  },
+  {
+    "id": "keras_rule_02",
+    "title": "High-Performance Data Loading via PyDataset",
+    "content": "The keras.utils.PyDataset class provides a thread-safe, high-performance data loading utility. It natively replaces the deprecated Sequence class. PyDataset avoids blocking the Python main thread during critical I/O operations and handles async workers perfectly across all backends."
+  },
+  {
+    "id": "keras_rule_03",
+    "title": "Mixed Precision Global Policy",
+    "content": "Enabling mixed_float16 global policy via keras.mixed_precision.set_global_policy('mixed_float16') halves memory consumption. It accelerates vector and matrix computations on compatible hardware by using float16 for tensors while strictly keeping float32 for model weights."
+  },
+  {
+    "id": "keras_rule_04",
+    "title": "Stateless vs Stateful Layers Design",
+    "content": "Keras 3 introduces structural separation between stateless operations and stateful layers. Layers hold variables (weights) but execute functional computations using backend-agnostic ops. When writing custom layers, compute functions must always accept clean inputs and avoid mutating internal tensor states directly."
+  },
+  {
+    "id": "keras_rule_05",
+    "title": "Model Serialization and Saving Standards",
+    "content": "To save and export production-ready Keras 3 models, use the standard extension .keras via model.save('model.keras'). This modern format is completely zip-based, self-contained, and preserves full model architecture, weights configuration, and compilation tracking across JAX, PyTorch, and TensorFlow."
+  },
+  {
+    "id": "keras_rule_06",
+    "title": "Custom Compilation and Agnostic Metrics",
+    "content": "When compiling Keras 3 enterprise models, all custom loss functions and evaluation metrics must be authored using keras.ops. Using native numpy or native framework tensors inside a custom metric will break the compilation graph when shifting between JAX and PyTorch execution loops."
+  },
+  {
+    "id": "keras_rule_07",
+    "title": "Jit Compilation and Model XLA Optimization",
+    "content": "Keras 3 models can be optimized for hardware deployment using Just-In-Time (JIT) compilation. By passing jit_compile=True inside model.compile(), the underlying backend uses XLA (Accelerated Linear Algebra) to fuse mathematical operations, reducing memory latency and maximizing production throughout."
+  },
+  {
+    "id": "keras_rule_08",
+    "title": "Distributed Training and Multi-GPU Mirror Strategy",
+    "content": "To execute production training across multiple local GPUs, instantiate the distribution framework using strategy = keras.distribution.MirroredDistribution(). Wrap the model creation and compilation inside the scope context 'with strategy.scope():' to automatically parallelize weight updates."
+  },
+  {
+    "id": "keras_rule_09",
+    "title": "Custom Learning Rate Schedulers and Decay",
+    "content": "For production network convergence, always inherit from keras.optimizers.schedules.LearningRateSchedule when implementing dynamic decay. Hardcoding learning rate modifications inside custom training steps or external python loops breaks graph compilation and runtime speed."
+  },
+  {
+    "id": "keras_rule_10",
+    "title": "Memory Leak Prevention via Garbage Collection Callbacks",
+    "content": "When running large-scale training loops with high-resolution imagery, python memory fragments accumulate. To prevent Out-Of-Memory (OOM) failures, implement a strict custom callback overriding 'on_epoch_end' that triggers manual python gc.collect() and keras.backend.clear_session()."
+  },
+  {
+    "id": "keras_rule_11",
+    "title": "Dynamic Graph Control via Static Conditionals",
+    "content": "When implementing dynamic execution paths inside compiled Keras 3 blocks, standard python 'if/else' blocks trigger trace-time evaluation errors. Developers must deploy keras.ops.cond(pred, true_fn, false_fn) to force functional symbolic execution branching inside backend hardware graphs."
+  },
+  {
+    "id": "keras_rule_12",
+    "title": "Post-Training Int8 Quantization Policy",
+    "content": "For extreme edge-device optimization, deploy the explicit quantization API via keras.quantizers.Quantizer. Subclassing this policy allows you to convert model layers to int8 metrics using custom clipping ranges while keeping calibration profiles invariant during deployment pipelines."
+  },
+  {
+    "id": "keras_rule_13",
+    "title": "Large Language Model Tensor Sharding and SPMD",
+    "content": "For models exceeding single GPU VRAM constraints, Keras 3 provides stateless tensor parallelization via keras.distribution.DeviceMesh. Map model weights using Layout specifications to auto-shard layers across multi-node infrastructures natively without modifying pure operational logic."
+  }
+]
